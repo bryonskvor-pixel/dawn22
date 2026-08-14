@@ -7,14 +7,14 @@
 - Photos placed: earlyus→5, youngus→9, hardtimes→11, chubbyme→14, usagain→16, midus→18, afavorite→20. All compressed to ≤1200px (~770KB total); art ≤1600px (~236KB). Originals moved to `originals/`.
 - QA via headless Chrome (puppeteer): 390px and 1280px, no horizontal scroll, gate wrong/right answers, marker entrances, map draw, audio fallback state. `prefers-reduced-motion` handled in CSS + JS. `noindex` set.
 
-**State**
-- Voice memo NOT yet provided. Drop it at `audio/anniversary.m4a`, commit, redeploy — the button auto-enables.
-- Not yet deployed — Bryon is linking the repo to Vercel himself (preset "Other", no build command).
+**Later same night**
+- Voice memo added and wired: `audio/anniversary.m4a` (AAC, 1:53, 1.8MB). Play button verified enabling in headless Chrome.
+- Marker 1 rewritten at Bryon's request (no math joke at Dawn's expense; now "glad the math was wrong... number 23 gets a different start"). This intentionally diverges from the spec's §6 copy.
+- Bryon is handling the Vercel deploy himself and is happy with the result.
 
 **Next steps**
-1. Bryon: add voice memo, deploy on Vercel, test the production URL in incognito on a phone.
-2. Optional: custom domain.
-3. Text the URL to Dawn on the morning of 8/14 (Mountain time), no explanation.
+1. Bryon: deploy on Vercel (preset "Other"), confirm repo is private, test production URL in incognito on a phone.
+2. Text the URL to Dawn on the morning of 8/14 (Mountain time), no explanation.
 
 **Context**
 - Gate answer: any string starting with "dill" (case-insensitive, trimmed).
