@@ -120,7 +120,7 @@
     src.loop = true;
     var lp = humCtx.createBiquadFilter();
     lp.type = 'lowpass';
-    lp.frequency.value = 340;
+    lp.frequency.value = 780; // high enough for phone speakers to reproduce
     lp.Q.value = 0.6;
     humGain = humCtx.createGain();
     humGain.gain.value = 0;
@@ -142,7 +142,7 @@
     lastScrollY = window.scrollY;
     lastScrollT = now;
     var speed = dy / dt; // px per ms
-    humSet(Math.min(0.09, 0.02 + speed * 0.05), 0.12);
+    humSet(Math.min(0.28, 0.07 + speed * 0.18), 0.12);
     clearTimeout(humIdleTimer);
     humIdleTimer = setTimeout(function () { humSet(0, 0.45); }, 320);
   }
