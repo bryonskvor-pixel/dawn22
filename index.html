@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#171227">
 <title>22</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232E6B4F'/%3E%3Crect x='5' y='5' width='54' height='54' rx='9' fill='none' stroke='%23F5EFE0' stroke-width='3'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='bold' fill='%23F5EFE0' text-anchor='middle'%3E22%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,600;0,700;0,900;1,600&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
@@ -271,6 +272,16 @@
   </section>
 
 </main>
+
+<!-- Road-hum toggle (sound synthesized in main.js, no audio file) -->
+<button id="humBtn" hidden aria-pressed="true" aria-label="Turn road sound off">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="spk" d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z"/>
+    <path class="wave" d="M15 8.5c1.8 1.8 1.8 5.2 0 7" fill="none"/>
+    <path class="wave" d="M17.5 6.5c3 3 3 8 0 11" fill="none"/>
+    <line class="slash" x1="4" y1="20" x2="20" y2="4"/>
+  </svg>
+</button>
 
 <script src="main.js"></script>
 </body>

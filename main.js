@@ -70,6 +70,7 @@
 
   var ticking = false;
   function onScroll() {
+    humOnScroll();
     if (!ticking) {
       ticking = true;
       requestAnimationFrame(function () { ticking = false; paintSky(); });
@@ -91,6 +92,74 @@
     }
     requestAnimationFrame(step);
   }
+
+  /* ================= ROAD HUM =================
+     Synthesized tires-on-asphalt: looped brown noise through a
+     low-pass filter, volume tied to scroll speed. No audio file.
+     Built lazily on a user gesture so mobile browsers allow it. */
+  var humBtn = document.getElementById('humBtn');
+  var humCtx = null, humGain = null;
+  var humEnabled = true, humMuted = false, humIdleTimer = null;
+  var lastScrollY = window.scrollY, lastScrollT = 0;
+
+  function buildHum() {
+    if (humCtx) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { humBtn.hidden = true; return; }
+    humCtx = new AC();
+    var sr = humCtx.sampleRate;
+    var buf = humCtx.createBuffer(1, sr * 2, sr);
+    var d = buf.getChannelData(0), last = 0;
+    for (var i = 0; i < d.length; i++) {
+      var w = Math.random() * 2 - 1;
+      last = (last + 0.02 * w) / 1.02;
+      d[i] = last * 3.5;
+    }
+    var src = humCtx.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    var lp = humCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 340;
+    lp.Q.value = 0.6;
+    humGain = humCtx.createGain();
+    humGain.gain.value = 0;
+    src.connect(lp);
+    lp.connect(humGain);
+    humGain.connect(humCtx.destination);
+    src.start();
+  }
+  function humSet(target, tc) {
+    if (!humGain) return;
+    humGain.gain.setTargetAtTime(target, humCtx.currentTime, tc);
+  }
+  function humOnScroll() {
+    if (!humCtx || !humEnabled || humMuted) return;
+    if (humCtx.state === 'suspended') humCtx.resume();
+    var now = performance.now();
+    var dy = Math.abs(window.scrollY - lastScrollY);
+    var dt = Math.max(16, now - lastScrollT);
+    lastScrollY = window.scrollY;
+    lastScrollT = now;
+    var speed = dy / dt; // px per ms
+    humSet(Math.min(0.09, 0.02 + speed * 0.05), 0.12);
+    clearTimeout(humIdleTimer);
+    humIdleTimer = setTimeout(function () { humSet(0, 0.45); }, 320);
+  }
+  function startHum() {
+    buildHum();
+    if (humCtx) {
+      if (humCtx.state === 'suspended') humCtx.resume();
+      humBtn.hidden = false;
+    }
+  }
+  humBtn.addEventListener('click', function () {
+    humEnabled = !humEnabled;
+    humBtn.classList.toggle('off', !humEnabled);
+    humBtn.setAttribute('aria-pressed', String(humEnabled));
+    humBtn.setAttribute('aria-label', humEnabled ? 'Turn road sound off' : 'Turn road sound on');
+    if (!humEnabled) humSet(0, 0.05);
+  });
 
   /* ================= GATE ================= */
   var gate = document.getElementById('gate');
@@ -120,6 +189,8 @@
 
   if (sessionStorage.getItem(KEY) === '1') {
     openGate(true);
+    // already unlocked (refresh): start the hum on her first touch
+    window.addEventListener('pointerdown', startHum, { once: true });
   } else {
     document.body.style.overflow = 'hidden';
     form.addEventListener('submit', function (e) {
@@ -127,6 +198,7 @@
       if (isRight(input.value)) {
         try { sessionStorage.setItem(KEY, '1'); } catch (err) {}
         input.blur();
+        startHum(); // the submit tap is the user gesture audio needs
         openGate(false);
       } else {
         gate.classList.add('tried');
@@ -200,10 +272,13 @@
   memo.addEventListener('play', function () {
     btn.classList.add('playing');
     btn.setAttribute('aria-label', 'Pause the voice memo');
+    humMuted = true;      // the road goes quiet for the voice memo
+    humSet(0, 0.05);
   });
   memo.addEventListener('pause', function () {
     btn.classList.remove('playing');
     btn.setAttribute('aria-label', 'Play the voice memo');
+    humMuted = false;
   });
   memo.addEventListener('timeupdate', function () {
     if (memo.duration) {
